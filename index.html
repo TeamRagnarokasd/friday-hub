@@ -253,8 +253,8 @@ a.slot:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
   function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
   var stage=document.querySelector(".stage");
 
-  var priorita=["Buoni pasto ASD entro 15 ott","Turno gio 15, ore 13","EZVIZ in errore"];
-  var parlato="Ho tre cose importanti. Entro il quindici ottobre i buoni pasto dell'ASD. Giovedì quindici hai il turno alle tredici. E i programmi delle telecamere sono in errore dalla scorsa notte.";
+  var priorita=[];
+  var parlato="";
   var CONTESTO="";
   var LABEL={idle:"PRIORITÀ ORA",ascolto:"ASCOLTO",elaboro:"ELABORO",parlo:"PARLO"};
   var CAP={ascolto:"Dimmi pure…",elaboro:"Controllo turni, telecamere e app…",parlo:"Due cose importanti: il turno di giovedì alle 13 e le telecamere EZVIZ in errore."};
