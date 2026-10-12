@@ -56,5 +56,6 @@ document.addEventListener("visibilitychange",function(){
   if(document.hidden){ if(on){ try{ rec.abort(); }catch(_){} } }
   else if(on){ keep(); start(); }
 });
+try{ navigator.permissions.query({name:"microphone"}).then(function(r){ if(r.state==="granted") b.onclick(); }).catch(function(){}); }catch(_){}
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});
 </script></body></html>
