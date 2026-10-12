@@ -45,5 +45,12 @@
     }
   };
   window.claude={use:function(k){ return k==="mcp"?Promise.resolve(mcp):Promise.reject(new Error("non disponibile")); }};
-  window.FridayBridge={call:call,haCodice:function(){ return !!codice(); }};
+  /* Gemini risponde a tutto (fuori da claude.ai Claude non c'e) */
+  async function libero(domanda){
+    var c=codice(); if(!c) return {errore:"Manca il codice di Friday su questo telefono."};
+    var r=await fetch(BASE.replace("/friday/","/friday-libero/")+c,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({domanda:domanda})});
+    if(!r.ok) return {errore:"Errore "+r.status};
+    return await r.json();
+  }
+  window.FridayBridge={call:call,libero:libero,haCodice:function(){ return !!codice(); }};
 })();

@@ -426,7 +426,7 @@ a.slot:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
       setState("parlo"); later(function(){setState("idle");},6000);
     }
     function viaClaude(){
-      if(!sampleFn){ try{ navigator.clipboard.writeText(q); }catch(_){} fine("Questa richiesta \u00e8 da Claude. L'ho copiata: incollala nell'app Claude."); return; }
+      if(!sampleFn){ if(window.FridayBridge&&FridayBridge.libero){ FridayBridge.libero(pg).then(function(r){ if(r&&r.risposta) fine(r.risposta); else { setCap((r&&r.errore)||"Non riesco a rispondere ora."); setState("parlo"); later(function(){setState("idle");},6000); } }).catch(function(){ errore({}); }); } else errore({}); return; }
       abortC=new AbortController(); var ans="";
       sampleFn("Sei Friday, l'assistente personale di "+nomeU()+""+(cur===0&&DESCR?" ("+DESCR+")":"")+". Rispondi come se ricordassi tu: non citare mai la fonte delle informazioni (profilo, dati, file, documenti) e non dire 'dal profilo' o 'risulta'. Dai solo la risposta. Rispondi in italiano, in modo diretto, massimo tre frasi brevi, senza elenchi né markdown, adatte a essere lette ad alta voce. Usa solo i dati qui sotto; se non bastano, dillo e dì cosa serve.\n\nDATI: "+ctxD()+"\n\nPROFILO DI "+nomeU().toUpperCase()+": "+pf()+cronTxt+"\n\nDOMANDA: "+q,{signal:abortC.signal,cache:false,modelTier:"quick",onText:function(o){ans=o.text;}}).then(function(r){fine(r&&r.text||ans);}).catch(errore);
     }
@@ -448,12 +448,13 @@ a.slot:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
       try{
         rec=new SR(); rec.lang="it-IT"; rec.interimResults=false; rec.maxAlternatives=1;
         rec.onresult=function(e){var t=e.results[0][0].transcript;rec=null;chiedi(t);};
-        rec.onerror=function(){rec=null;};
+        rec.onerror=function(ev){rec=null; var er=ev&&ev.error||""; if(er==="no-speech") setCap("Non ho sentito nulla: riprova o scrivi qui sotto."); else setCap("Microfono non disponibile ("+er+"): scrivi qui sotto."); setState("parlo"); showAsk(true);};
         rec.onend=function(){rec=null;};
         rec.start();
       }catch(_){rec=null;}
     }
   }
+  document.addEventListener("visibilitychange",function(){ if(document.hidden){ try{if(rec)rec.stop();}catch(_){} rec=null; try{ if(window.FridayAscolto) FridayAscolto.stop(); }catch(_){} } });
   var ch=$("coreHit");if(ch)ch.addEventListener("click",avvia);
   var nb=$("hsNew");if(nb)nb.addEventListener("click",function(){conv=[];lastT=0;try{if(abortC)abortC.abort();}catch(_){} try{if(rec)rec.stop();}catch(_){} try{speechSynthesis.cancel();}catch(_){} showAsk(false); stopAll();});
   Array.prototype.forEach.call(document.querySelectorAll(".ringimg[role=button]"),function(r){
@@ -524,7 +525,7 @@ a.slot:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
       done(); }); }catch(x){ o.push("permessi no"); done(); }
   });
   /* a pagina intera il microfono e' libero: ascolto automatico */
-  try{ if(window.top===window){ loadSpk().then(function(){ return new Promise(function(ok,ko){ var sc=document.createElement("script"); sc.src=new URL("ascolto.js",location.href).href; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); }); }).then(function(){
+  try{ if(window.FRIDAY_ASCOLTO_CONTINUO===true){ loadSpk().then(function(){ return new Promise(function(ok,ko){ var sc=document.createElement("script"); sc.src=new URL("ascolto.js",location.href).href; sc.onload=ok; sc.onerror=ko; document.head.appendChild(sc); }); }).then(function(){
       FridayAscolto.onChi=function(r){ var i=-1; PROF.forEach(function(p,k){ if(r.nome&&p.nome&&p.nome.toLowerCase()===r.nome.toLowerCase()) i=k; }); if(i>=0&&i!==cur){ cur=i; conv=[]; } };
       FridayAscolto.ui(); try{ FridaySpk.init().catch(function(){}); }catch(_){} try{ navigator.permissions.query({name:"microphone"}).then(function(r){ if(r.state==="granted") FridayAscolto.start().catch(function(){}); }).catch(function(){}); }catch(_){} }).catch(function(){}); } }catch(_){}
   /* widget: catalogo, scelta con pressione lunga */
