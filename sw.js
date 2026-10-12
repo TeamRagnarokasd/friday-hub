@@ -1,6 +1,6 @@
 /* Cache di Friday: i file pesanti (voce, riconoscimento voce) si scaricano una volta sola. */
-var V="friday-v1";
-var SHELL=["./","index.html","bridge.js","voce.js","spk.js","ascolto.js","manifest.webmanifest","icon-192.png","icon-512.png"];
+var V="friday-v2";
+var SHELL=["./","index.html","hub.html","bridge.js","voce.js","spk.js","ascolto.js","manifest.webmanifest","icon-192.png","icon-512.png"];
 
 self.addEventListener("install",function(e){
   /* ogni file a parte: se una manca, il resto si installa lo stesso (il sito deve restare installabile) */
